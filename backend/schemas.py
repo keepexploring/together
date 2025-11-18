@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
-from models import ImpactCategory, FrequencyType, PledgeStatus
+from models import ImpactCategory, FrequencyType, PledgeStatus, BadgeCategory, BadgeTier
 
 # User Schemas
 class UserBase(BaseModel):
@@ -187,3 +187,168 @@ class SimplePledgeEntry(BaseModel):
     action_id: int
     commitment_text: Optional[str] = None
     duration_days: int = 30
+
+# Badge Schemas
+class BadgeBase(BaseModel):
+    name: str
+    description: str
+    category: BadgeCategory
+    tier: BadgeTier
+    icon: str
+    color: str = "#4CAF50"
+    criteria_type: str
+    criteria_value: float
+    sort_order: int = 0
+    can_order_physical: bool = False
+    physical_cost: float = 0.0
+
+class BadgeCreate(BadgeBase):
+    pass
+
+class Badge(BadgeBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# UserBadge Schemas
+class UserBadgeBase(BaseModel):
+    badge_id: int
+    progress: float = 0.0
+    is_displayed: bool = True
+
+class UserBadgeCreate(UserBadgeBase):
+    user_id: int
+
+class UserBadge(UserBadgeBase):
+    id: int
+    user_id: int
+    earned_at: datetime
+    physical_ordered: bool
+    physical_ordered_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class UserBadgeWithDetails(UserBadge):
+    badge: Badge
+
+    class Config:
+        from_attributes = True
+
+# Milestone Schemas
+class MilestoneBase(BaseModel):
+    title: str
+    description: str
+    milestone_type: str
+    value_achieved: float
+    is_public: bool = True
+
+class MilestoneCreate(MilestoneBase):
+    user_id: Optional[int] = None
+    organization_id: Optional[int] = None
+
+class Milestone(MilestoneBase):
+    id: int
+    user_id: Optional[int] = None
+    organization_id: Optional[int] = None
+    celebrated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# SuccessStory Schemas
+class SuccessStoryBase(BaseModel):
+    title: str
+    story: str
+    impact_highlight: Optional[str] = None
+
+class SuccessStoryCreate(SuccessStoryBase):
+    pledge_id: Optional[int] = None
+    image_url: Optional[str] = None
+
+class SuccessStory(SuccessStoryBase):
+    id: int
+    user_id: int
+    pledge_id: Optional[int] = None
+    image_url: Optional[str] = None
+    is_featured: bool
+    is_approved: bool
+    submitted_at: datetime
+    approved_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class SuccessStoryWithUser(SuccessStory):
+    user: User
+
+    class Config:
+        from_attributes = True
+
+# PledgePhoto Schemas
+class PledgePhotoBase(BaseModel):
+    photo_url: str
+    caption: Optional[str] = None
+
+class PledgePhotoCreate(PledgePhotoBase):
+    pledge_id: int
+
+class PledgePhoto(PledgePhotoBase):
+    id: int
+    pledge_id: int
+    user_id: int
+    uploaded_at: datetime
+    verified_by_peers: int
+
+    class Config:
+        from_attributes = True
+
+# ActivityFeed Schemas
+class ActivityFeedBase(BaseModel):
+    activity_type: str
+    activity_text: str
+    related_id: Optional[int] = None
+    is_public: bool = True
+
+class ActivityFeedCreate(ActivityFeedBase):
+    user_id: int
+    organization_id: Optional[int] = None
+
+class ActivityFeed(ActivityFeedBase):
+    id: int
+    user_id: int
+    organization_id: Optional[int] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ActivityFeedWithUser(ActivityFeed):
+    user: User
+
+    class Config:
+        from_attributes = True
+
+# Badge Progress Response
+class BadgeProgress(BaseModel):
+    badge: Badge
+    current_value: float
+    target_value: float
+    progress_percentage: float
+    is_earned: bool
+
+# User Profile Summary
+class UserProfileSummary(BaseModel):
+    user: User
+    total_pledges: int
+    active_pledges: int
+    completed_pledges: int
+    badges_earned: List[UserBadgeWithDetails]
+    total_carbon_saved: float
+    total_plastic_saved: float
+    total_water_saved: float
+    current_streak_days: int
+    milestones: List[Milestone]
