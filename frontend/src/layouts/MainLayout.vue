@@ -12,19 +12,45 @@
         <q-btn flat label="Home" to="/" />
         <q-btn flat label="Make a Pledge" to="/pledge" />
         <q-btn flat label="Impact" to="/impact" />
-        <q-btn flat label="Campaigns" to="/campaigns" />
-        <q-btn flat label="Organize" to="/organize" />
+        <q-btn flat label="Community" to="/community" />
+        <q-btn flat label="Stories" to="/stories" />
 
         <q-space />
 
         <q-btn flat round dense icon="more_vert">
           <q-menu>
-            <q-list style="min-width: 150px">
+            <q-list style="min-width: 180px">
+              <q-item clickable v-close-popup to="/dashboard">
+                <q-item-section avatar>
+                  <q-icon name="dashboard" />
+                </q-item-section>
+                <q-item-section>My Dashboard</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup to="/profile/1">
+                <q-item-section avatar>
+                  <q-icon name="person" />
+                </q-item-section>
+                <q-item-section>My Profile</q-item-section>
+              </q-item>
+              <q-separator />
               <q-item clickable v-close-popup to="/my-pledges">
                 <q-item-section avatar>
                   <q-icon name="check_circle" />
                 </q-item-section>
                 <q-item-section>My Pledges</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup to="/campaigns">
+                <q-item-section avatar>
+                  <q-icon name="campaign" />
+                </q-item-section>
+                <q-item-section>Campaigns</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable v-close-popup to="/organize">
+                <q-item-section avatar>
+                  <q-icon name="groups" />
+                </q-item-section>
+                <q-item-section>Organize</q-item-section>
               </q-item>
               <q-item clickable v-close-popup to="/cms">
                 <q-item-section avatar>
