@@ -84,6 +84,13 @@ class EnvironmentalAction(Base):
     trees_equivalent = Column(Float, default=0.0)  # tree planting equivalent
     ecosystem_points = Column(Float, default=0.0)  # generic ecosystem restoration points
 
+    # Parametric action support (for customizable actions)
+    is_parametric = Column(Boolean, default=False)  # Does user specify current/target?
+    parameter_name = Column(String, nullable=True)  # e.g., "days_per_week", "km_per_day"
+    parameter_unit = Column(String, nullable=True)  # e.g., "days/week", "km", "times/week"
+    parameter_description = Column(Text, nullable=True)  # Help text for users
+    base_impact_per_unit = Column(Float, default=0.0)  # Impact per unit of reduction
+
     # Metadata
     frequency_type = Column(SQLEnum(FrequencyType), default=FrequencyType.DAILY)
     is_global = Column(Boolean, default=True)  # Global actions vs org-specific
@@ -109,6 +116,10 @@ class Pledge(Base):
     start_date = Column(DateTime, default=datetime.utcnow)
     end_date = Column(DateTime)
     status = Column(SQLEnum(PledgeStatus), default=PledgeStatus.ACTIVE)
+
+    # Parametric action values (for customizable actions)
+    parameter_current_value = Column(Float, nullable=True)  # Current behavior (e.g., 5 days/week)
+    parameter_target_value = Column(Float, nullable=True)  # Goal (e.g., 2 days/week)
 
     # Follow-up
     follow_up_frequency_days = Column(Integer, default=7)  # Check-in every N days

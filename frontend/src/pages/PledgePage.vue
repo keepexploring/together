@@ -170,6 +170,49 @@
               :rules="[val => val > 0 || 'Must be positive']"
             />
 
+            <template v-if="selectedAction && selectedAction.is_parametric">
+              <div class="q-mb-md q-pa-md bg-blue-1" style="border-radius: 4px;">
+                <div class="text-caption text-weight-bold q-mb-xs">
+                  Customize Your Goal
+                </div>
+                <p class="text-caption q-mb-md">{{ selectedAction.parameter_description }}</p>
+
+                <div class="row q-col-gutter-md">
+                  <div class="col-6">
+                    <q-input
+                      v-model.number="pledgeForm.parameterCurrentValue"
+                      :label="`Current (${selectedAction.parameter_unit})`"
+                      type="number"
+                      outlined
+                      dense
+                      required
+                      step="0.1"
+                      hint="Your current behavior"
+                      :rules="[val => val >= 0 || 'Must be positive']"
+                    />
+                  </div>
+                  <div class="col-6">
+                    <q-input
+                      v-model.number="pledgeForm.parameterTargetValue"
+                      :label="`Target (${selectedAction.parameter_unit})`"
+                      type="number"
+                      outlined
+                      dense
+                      required
+                      step="0.1"
+                      hint="Your goal"
+                      :rules="[val => val >= 0 || 'Must be positive']"
+                    />
+                  </div>
+                </div>
+
+                <div v-if="parametricImpact > 0" class="q-mt-sm text-caption text-positive">
+                  <q-icon name="eco" size="xs" />
+                  Your reduction will save approximately {{ parametricImpact.toFixed(1) }} kg CO₂ per year!
+                </div>
+              </div>
+            </template>
+
             <q-input
               v-model="pledgeForm.commitment"
               label="Personal Commitment (Optional)"
@@ -239,7 +282,9 @@ export default defineComponent({
       accessCode: '',
       durationDays: 30,
       followUpDays: 7,
-      commitment: ''
+      commitment: '',
+      parameterCurrentValue: null,
+      parameterTargetValue: null
     })
 
     const categoryOptions = [
@@ -272,6 +317,18 @@ export default defineComponent({
     const calculatedImpact = computed(() => {
       if (!selectedAction.value) return { carbon: 0, plastic: 0, water: 0 }
 
+      // Handle parametric actions
+      if (selectedAction.value.is_parametric && pledgeForm.value.parameterCurrentValue !== null && pledgeForm.value.parameterTargetValue !== null) {
+        const reduction = pledgeForm.value.parameterCurrentValue - pledgeForm.value.parameterTargetValue
+        if (reduction > 0) {
+          const durationFactor = pledgeForm.value.durationDays / 365.0
+          const carbonImpact = selectedAction.value.base_impact_per_unit * reduction * durationFactor
+          return { carbon: carbonImpact, plastic: 0, water: 0 }
+        }
+        return { carbon: 0, plastic: 0, water: 0 }
+      }
+
+      // Standard actions
       const days = pledgeForm.value.durationDays
       let multiplier = days / 365.0
 
@@ -286,6 +343,17 @@ export default defineComponent({
         plastic: selectedAction.value.plastic_saved_kg * multiplier,
         water: selectedAction.value.water_saved_liters * multiplier
       }
+    })
+
+    const parametricImpact = computed(() => {
+      if (!selectedAction.value || !selectedAction.value.is_parametric) return 0
+      if (pledgeForm.value.parameterCurrentValue === null || pledgeForm.value.parameterTargetValue === null) return 0
+
+      const reduction = pledgeForm.value.parameterCurrentValue - pledgeForm.value.parameterTargetValue
+      if (reduction > 0) {
+        return selectedAction.value.base_impact_per_unit * reduction
+      }
+      return 0
     })
 
     const fetchActions = async () => {
@@ -319,7 +387,9 @@ export default defineComponent({
           action_id: selectedAction.value.id,
           commitment_text: pledgeForm.value.commitment,
           duration_days: pledgeForm.value.durationDays,
-          follow_up_frequency_days: pledgeForm.value.followUpDays
+          follow_up_frequency_days: pledgeForm.value.followUpDays,
+          parameter_current_value: pledgeForm.value.parameterCurrentValue,
+          parameter_target_value: pledgeForm.value.parameterTargetValue
         }
 
         let response
@@ -359,7 +429,9 @@ export default defineComponent({
         accessCode: '',
         durationDays: 30,
         followUpDays: 7,
-        commitment: ''
+        commitment: '',
+        parameterCurrentValue: null,
+        parameterTargetValue: null
       }
     }
 
@@ -406,6 +478,7 @@ export default defineComponent({
       categoryOptions,
       filteredActions,
       calculatedImpact,
+      parametricImpact,
       selectAction,
       submitPledge,
       getCategoryIcon,

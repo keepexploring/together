@@ -87,6 +87,66 @@
               </div>
 
               <div class="col-12">
+                <q-separator class="q-my-md" />
+                <q-toggle
+                  v-model="form.is_parametric"
+                  label="This is a customizable action (users specify their current/target values)"
+                  color="primary"
+                />
+              </div>
+
+              <template v-if="form.is_parametric">
+                <div class="col-12">
+                  <div class="text-h6 q-mb-sm">Parametric Action Settings</div>
+                  <p class="text-caption text-grey-7">
+                    For parametric actions, users will specify their current behavior and target goal.
+                    The impact is calculated based on the reduction multiplied by the base impact per unit.
+                  </p>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <q-input
+                    v-model="form.parameter_name"
+                    label="Parameter Name"
+                    outlined
+                    hint="e.g., days_per_week, meals_per_week"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <q-input
+                    v-model="form.parameter_unit"
+                    label="Parameter Unit"
+                    outlined
+                    hint="e.g., days/week, meals/week, km/day"
+                  />
+                </div>
+
+                <div class="col-12">
+                  <q-input
+                    v-model="form.parameter_description"
+                    label="Parameter Description"
+                    type="textarea"
+                    outlined
+                    rows="2"
+                    hint="Help text for users (e.g., 'How many days per week do you currently drive?')"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <q-input
+                    v-model.number="form.base_impact_per_unit"
+                    label="Base Impact Per Unit (kg CO2)"
+                    type="number"
+                    outlined
+                    step="0.01"
+                    hint="Impact per unit of reduction"
+                  />
+                </div>
+              </template>
+
+              <div class="col-12">
+                <q-separator class="q-my-md" />
                 <q-input
                   v-model="form.source_info"
                   label="Source/Citation"
@@ -139,7 +199,12 @@ export default defineComponent({
       plastic_saved_kg: 0,
       water_saved_liters: 0,
       frequency_type: 'yearly',
-      source_info: ''
+      source_info: '',
+      is_parametric: false,
+      parameter_name: '',
+      parameter_unit: '',
+      parameter_description: '',
+      base_impact_per_unit: 0
     })
 
     const categoryOptions = [
@@ -176,7 +241,12 @@ export default defineComponent({
           plastic_saved_kg: 0,
           water_saved_liters: 0,
           frequency_type: 'yearly',
-          source_info: ''
+          source_info: '',
+          is_parametric: false,
+          parameter_name: '',
+          parameter_unit: '',
+          parameter_description: '',
+          base_impact_per_unit: 0
         }
       } catch (error) {
         $q.notify({

@@ -253,6 +253,8 @@ async def create_pledge(pledge: schemas.PledgeCreate, db: AsyncSession = Depends
         end_date=end_date,
         follow_up_frequency_days=pledge.follow_up_frequency_days,
         next_follow_up=next_follow_up,
+        parameter_current_value=pledge.parameter_current_value,
+        parameter_target_value=pledge.parameter_target_value,
         status=PledgeStatus.ACTIVE
     )
     db.add(db_pledge)
@@ -410,23 +412,33 @@ async def calculate_impact(db: AsyncSession, organization_id: Optional[int] = No
     completed_count = 0
 
     for pledge in pledges:
-        # Calculate impact based on pledge duration and action frequency
-        multiplier = pledge.duration_days / 365.0  # Convert to yearly fraction
+        # Handle parametric actions
+        if pledge.action.is_parametric and pledge.parameter_current_value is not None and pledge.parameter_target_value is not None:
+            # Calculate impact based on reduction amount (current - target) * base_impact_per_unit
+            reduction = pledge.parameter_current_value - pledge.parameter_target_value
+            if reduction > 0:  # Only count if it's actually a reduction
+                # For parametric actions, multiply by duration factor
+                duration_factor = pledge.duration_days / 365.0
+                total_carbon += pledge.action.base_impact_per_unit * reduction * duration_factor
+                # Parametric actions primarily affect carbon; could extend to other metrics if needed
+        else:
+            # Standard non-parametric actions
+            multiplier = pledge.duration_days / 365.0  # Convert to yearly fraction
 
-        if pledge.action.frequency_type.value == "daily":
-            multiplier *= 365
-        elif pledge.action.frequency_type.value == "weekly":
-            multiplier *= 52
-        elif pledge.action.frequency_type.value == "monthly":
-            multiplier *= 12
-        elif pledge.action.frequency_type.value == "once":
-            multiplier = 1
+            if pledge.action.frequency_type.value == "daily":
+                multiplier *= 365
+            elif pledge.action.frequency_type.value == "weekly":
+                multiplier *= 52
+            elif pledge.action.frequency_type.value == "monthly":
+                multiplier *= 12
+            elif pledge.action.frequency_type.value == "once":
+                multiplier = 1
 
-        total_carbon += pledge.action.carbon_saved_kg * multiplier
-        total_plastic += pledge.action.plastic_saved_kg * multiplier
-        total_water += pledge.action.water_saved_liters * multiplier
-        total_trees += pledge.action.trees_equivalent * multiplier
-        total_ecosystem += pledge.action.ecosystem_points * multiplier
+            total_carbon += pledge.action.carbon_saved_kg * multiplier
+            total_plastic += pledge.action.plastic_saved_kg * multiplier
+            total_water += pledge.action.water_saved_liters * multiplier
+            total_trees += pledge.action.trees_equivalent * multiplier
+            total_ecosystem += pledge.action.ecosystem_points * multiplier
 
         if pledge.status == PledgeStatus.ACTIVE or pledge.status == PledgeStatus.IN_PROGRESS:
             active_count += 1

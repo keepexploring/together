@@ -444,4 +444,322 @@ ENVIRONMENTAL_ACTIONS = [
         "frequency_type": FrequencyType.YEARLY,
         "source_info": "Financial choices influence corporate environmental practices",
     },
+
+    # ============================================================================
+    # PARAMETRIC ACTIONS - Small, Achievable, Customizable
+    # ============================================================================
+
+    # TRANSPORTATION - Parametric
+    {
+        "title": "Reduce car usage (customizable)",
+        "description": "Commit to reducing the number of days you drive per week. You'll specify how many days you currently drive and how many you want to reduce to.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "days_per_week",
+        "parameter_unit": "days/week",
+        "parameter_description": "How many days per week do you drive? How many days do you want to reduce to?",
+        "base_impact_per_unit": 8.2,  # kg CO2 per day of driving avoided (average 20km/day * 0.41 kg/km)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average car emits ~0.41 kg CO2 per km; typical daily commute ~20km",
+    },
+    {
+        "title": "Reduce driving distance (customizable)",
+        "description": "Commit to reducing your daily driving distance. Combine trips, work from home more, or choose closer destinations.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "km_per_week",
+        "parameter_unit": "km/week",
+        "parameter_description": "How many km do you currently drive per week? How much will you reduce to?",
+        "base_impact_per_unit": 0.41,  # kg CO2 per km
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average car emits 0.41 kg CO2 per km",
+    },
+    {
+        "title": "Take public transit more often",
+        "description": "Increase the number of times you use public transportation instead of driving.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "trips_per_week",
+        "parameter_unit": "trips/week",
+        "parameter_description": "How many car trips per week will you replace with public transit?",
+        "base_impact_per_unit": 4.1,  # kg CO2 per 10km car trip saved
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average 10km car trip = ~4.1 kg CO2; public transit reduces this by ~75%",
+    },
+    {
+        "title": "Carpool more frequently",
+        "description": "Increase carpooling with colleagues, friends, or family for commutes or errands.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "trips_per_week",
+        "parameter_unit": "trips/week",
+        "parameter_description": "How many trips per week will you carpool instead of driving solo?",
+        "base_impact_per_unit": 4.1,  # kg CO2 per trip (assuming avg 10km)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Carpooling reduces per-person emissions by 50%+ for shared trips",
+    },
+
+    # DIET - Parametric
+    {
+        "title": "Reduce meat consumption (customizable)",
+        "description": "Eat less meat by reducing the number of times you eat meat per week. Every meal counts!",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "meals_per_week",
+        "parameter_unit": "meals/week",
+        "parameter_description": "How many meat meals do you eat per week now? How many will you reduce to?",
+        "base_impact_per_unit": 1.5,  # kg CO2 per meat meal avoided
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average meat meal produces ~3.3 kg CO2; plant-based ~0.8 kg; diff ~2.5 kg, conservative 1.5 kg",
+    },
+    {
+        "title": "Reduce red meat specifically",
+        "description": "Cut back on beef and lamb, the most carbon-intensive meats. Switch to chicken, fish, or plant-based options.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "meals_per_week",
+        "parameter_unit": "meals/week",
+        "parameter_description": "How many red meat meals per week now? How many will you reduce to?",
+        "base_impact_per_unit": 3.0,  # kg CO2 per red meat meal avoided
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Beef produces ~27 kg CO2/kg; switching to chicken saves ~20 kg CO2/kg",
+    },
+    {
+        "title": "Reduce dairy consumption",
+        "description": "Cut back on dairy products by reducing portions or choosing plant-based alternatives some days.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "servings_per_week",
+        "parameter_unit": "servings/week",
+        "parameter_description": "How many dairy servings per week now? How many will you reduce to?",
+        "base_impact_per_unit": 0.5,  # kg CO2 per dairy serving avoided
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Dairy production averages ~2.5 kg CO2 per liter; plant alternatives ~0.5 kg CO2",
+    },
+    {
+        "title": "Reduce food waste at home",
+        "description": "Waste less food by planning meals better, storing food properly, and eating leftovers.",
+        "category": ImpactCategory.WASTE_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "percent_reduction",
+        "parameter_unit": "%",
+        "parameter_description": "By what percentage will you reduce your food waste? (e.g., from 30% to 15% = 15% reduction)",
+        "base_impact_per_unit": 5.0,  # kg CO2 per percent of food waste reduced (average household)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Food waste contributes ~1.5 tons CO2/household/year; reduction proportional",
+    },
+
+    # ENERGY - Parametric
+    {
+        "title": "Reduce thermostat temperature in winter",
+        "description": "Lower your heating temperature by a few degrees and wear warmer clothes indoors.",
+        "category": ImpactCategory.ENERGY_CONSERVATION,
+        "is_parametric": True,
+        "parameter_name": "degrees_celsius",
+        "parameter_unit": "°C",
+        "parameter_description": "By how many degrees will you lower your thermostat?",
+        "base_impact_per_unit": 200.0,  # kg CO2 per degree C per year
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Each degree reduction saves ~200 kg CO2/year for average home",
+    },
+    {
+        "title": "Increase air conditioning temperature",
+        "description": "Raise your AC temperature in summer to reduce energy usage.",
+        "category": ImpactCategory.ENERGY_CONSERVATION,
+        "is_parametric": True,
+        "parameter_name": "degrees_celsius",
+        "parameter_unit": "°C",
+        "parameter_description": "By how many degrees will you raise your AC temperature?",
+        "base_impact_per_unit": 180.0,  # kg CO2 per degree C per year
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Each degree increase saves ~180 kg CO2/year for average home AC",
+    },
+    {
+        "title": "Reduce shower time",
+        "description": "Take shorter showers to save water and energy.",
+        "category": ImpactCategory.WATER_CONSERVATION,
+        "is_parametric": True,
+        "parameter_name": "minutes_per_day",
+        "parameter_unit": "minutes/day",
+        "parameter_description": "How many minutes will you reduce your daily shower time?",
+        "base_impact_per_unit": 2082.0,  # liters per minute per year (5.7L/min * 365 days)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Standard showerhead uses ~5.7 liters/minute; each minute saved = significant water conservation",
+    },
+    {
+        "title": "Reduce laundry frequency",
+        "description": "Do laundry less often by wearing clothes multiple times when appropriate.",
+        "category": ImpactCategory.ENERGY_CONSERVATION,
+        "is_parametric": True,
+        "parameter_name": "loads_per_month",
+        "parameter_unit": "loads/month",
+        "parameter_description": "How many fewer loads of laundry per month?",
+        "base_impact_per_unit": 6.0,  # kg CO2 per load per year
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Each laundry load uses ~0.5 kg CO2 in energy",
+    },
+
+    # PLASTIC - Parametric
+    {
+        "title": "Reduce single-use plastic items",
+        "description": "Cut down on disposable plastic items like bags, bottles, straws, and containers.",
+        "category": ImpactCategory.PLASTIC_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "items_per_week",
+        "parameter_unit": "items/week",
+        "parameter_description": "How many single-use plastic items will you eliminate per week?",
+        "base_impact_per_unit": 0.3,  # kg plastic per item per year (average ~6g per item)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average single-use plastic item ~6g; avoiding adds up significantly",
+    },
+    {
+        "title": "Bring reusable bags shopping",
+        "description": "Increase the number of shopping trips where you use reusable bags.",
+        "category": ImpactCategory.PLASTIC_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "trips_per_month",
+        "parameter_unit": "trips/month",
+        "parameter_description": "How many shopping trips per month will you use reusable bags?",
+        "base_impact_per_unit": 0.12,  # kg plastic per trip per year (2 bags @ 5g each)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Each shopping trip typically uses 2-3 plastic bags (~5-8g each)",
+    },
+
+    # WASTE - Parametric
+    {
+        "title": "Increase composting efforts",
+        "description": "Compost more of your food scraps and organic waste instead of throwing them away.",
+        "category": ImpactCategory.WASTE_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "percent_composted",
+        "parameter_unit": "%",
+        "parameter_description": "What percentage of your food waste will you compost? (e.g., currently 0%, goal 50%)",
+        "base_impact_per_unit": 3.0,  # kg CO2 per percent composted
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Composting vs landfilling reduces emissions by ~0.84 tons for avg household; proportional to percentage",
+    },
+    {
+        "title": "Increase recycling rate",
+        "description": "Recycle more of your household waste by being more diligent about sorting.",
+        "category": ImpactCategory.WASTE_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "percent_recycled",
+        "parameter_unit": "%",
+        "parameter_description": "What percentage of recyclables will you actually recycle? (current vs. goal)",
+        "base_impact_per_unit": 2.0,  # kg CO2 per percent increase in recycling
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Recycling reduces manufacturing emissions significantly; every percent helps",
+    },
+    {
+        "title": "Buy secondhand items more often",
+        "description": "Increase the proportion of items you buy secondhand vs. new.",
+        "category": ImpactCategory.WASTE_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "items_per_month",
+        "parameter_unit": "items/month",
+        "parameter_description": "How many items per month will you buy secondhand instead of new?",
+        "base_impact_per_unit": 25.0,  # kg CO2 per item per year (conservative avg for clothing/goods)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "New clothing item ~25 kg CO2; secondhand reduces this dramatically",
+    },
+
+    # WATER - Parametric
+    {
+        "title": "Reduce lawn watering",
+        "description": "Water your lawn less frequently, especially during cooler parts of the day.",
+        "category": ImpactCategory.WATER_CONSERVATION,
+        "is_parametric": True,
+        "parameter_name": "hours_per_week",
+        "parameter_unit": "hours/week",
+        "parameter_description": "How many hours per week will you reduce lawn watering?",
+        "base_impact_per_unit": 18000.0,  # liters per hour per year (typical sprinkler ~20L/min)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Lawn sprinklers use ~20 liters/minute; reduction saves significant water",
+    },
+    {
+        "title": "Fix dripping faucets faster",
+        "description": "Commit to fixing leaky faucets within a certain timeframe instead of letting them drip.",
+        "category": ImpactCategory.WATER_CONSERVATION,
+        "is_parametric": True,
+        "parameter_name": "faucets_fixed",
+        "parameter_unit": "faucets",
+        "parameter_description": "How many dripping faucets will you fix?",
+        "base_impact_per_unit": 15000.0,  # liters per faucet per year
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "One dripping faucet wastes ~15,000 liters/year",
+    },
+
+    # LIFESTYLE - Parametric
+    {
+        "title": "Work from home more often",
+        "description": "Increase the number of days you work from home to reduce commute emissions.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "days_per_month",
+        "parameter_unit": "days/month",
+        "parameter_description": "How many additional days per month will you work from home?",
+        "base_impact_per_unit": 20.0,  # kg CO2 per WFH day per year (avg commute 20km round trip)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average commute 20km round trip = ~8.2 kg CO2/day",
+    },
+    {
+        "title": "Buy local produce more often",
+        "description": "Increase the percentage of your groceries that are locally sourced.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "percent_local",
+        "parameter_unit": "%",
+        "parameter_description": "What percentage of your produce will be local? (current vs. goal)",
+        "base_impact_per_unit": 1.5,  # kg CO2 per percent increase
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Local food reduces transport emissions; avg 150 kg CO2/year for full local diet",
+    },
+    {
+        "title": "Reduce online shopping deliveries",
+        "description": "Consolidate online orders to reduce delivery vehicle trips.",
+        "category": ImpactCategory.CARBON_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "deliveries_per_month",
+        "parameter_unit": "deliveries/month",
+        "parameter_description": "How many fewer deliveries per month? (combine orders, shop in-person)",
+        "base_impact_per_unit": 6.0,  # kg CO2 per delivery per year
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Each delivery trip averages ~0.5 kg CO2",
+    },
+    {
+        "title": "Reduce paper usage",
+        "description": "Use less paper by going digital, printing double-sided, or using scrap paper.",
+        "category": ImpactCategory.WASTE_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "sheets_per_week",
+        "parameter_unit": "sheets/week",
+        "parameter_description": "How many sheets of paper per week will you save?",
+        "base_impact_per_unit": 0.02,  # kg CO2 per sheet per year
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Paper production ~5g CO2 per sheet",
+    },
+    {
+        "title": "Unplug devices and chargers",
+        "description": "Reduce vampire power by unplugging devices and chargers when not in use.",
+        "category": ImpactCategory.ENERGY_CONSERVATION,
+        "is_parametric": True,
+        "parameter_name": "devices_unplugged",
+        "parameter_unit": "devices",
+        "parameter_description": "How many devices/chargers will you regularly unplug?",
+        "base_impact_per_unit": 25.0,  # kg CO2 per device per year (avg 5W standby)
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average device standby power ~5W = ~25 kg CO2/year",
+    },
+    {
+        "title": "Reduce fast fashion purchases",
+        "description": "Buy fewer new clothing items and make what you have last longer.",
+        "category": ImpactCategory.WASTE_REDUCTION,
+        "is_parametric": True,
+        "parameter_name": "items_per_year",
+        "parameter_unit": "items/year",
+        "parameter_description": "How many fewer clothing items will you buy per year?",
+        "base_impact_per_unit": 25.0,  # kg CO2 per clothing item
+        "frequency_type": FrequencyType.YEARLY,
+        "source_info": "Average clothing item produces ~25 kg CO2 in manufacturing",
+    },
 ]

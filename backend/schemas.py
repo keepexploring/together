@@ -50,6 +50,12 @@ class EnvironmentalActionBase(BaseModel):
     ecosystem_points: float = 0.0
     frequency_type: FrequencyType = FrequencyType.DAILY
     source_info: Optional[str] = None
+    # Parametric fields
+    is_parametric: bool = False
+    parameter_name: Optional[str] = None
+    parameter_unit: Optional[str] = None
+    parameter_description: Optional[str] = None
+    base_impact_per_unit: float = 0.0
 
 class EnvironmentalActionCreate(EnvironmentalActionBase):
     organization_id: Optional[int] = None
@@ -69,6 +75,9 @@ class PledgeBase(BaseModel):
     commitment_text: Optional[str] = None
     duration_days: int = 30
     follow_up_frequency_days: int = 7
+    # Parametric action values
+    parameter_current_value: Optional[float] = None
+    parameter_target_value: Optional[float] = None
 
 class PledgeCreate(PledgeBase):
     organization_id: Optional[int] = None
