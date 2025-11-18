@@ -26,6 +26,24 @@ class PledgeStatus(str, enum.Enum):
     IN_PROGRESS = "in_progress"
     MISSED = "missed"
 
+class BadgeCategory(str, enum.Enum):
+    CARBON = "carbon"
+    PLASTIC = "plastic"
+    WATER = "water"
+    WASTE = "waste"
+    ECOSYSTEM = "ecosystem"
+    ENERGY = "energy"
+    COMMUNITY = "community"
+    COMMITMENT = "commitment"
+    MILESTONE = "milestone"
+
+class BadgeTier(str, enum.Enum):
+    BRONZE = "bronze"
+    SILVER = "silver"
+    GOLD = "gold"
+    PLATINUM = "platinum"
+    DIAMOND = "diamond"
+
 # Association table for organization members
 organization_members = Table(
     'organization_members',
@@ -49,6 +67,11 @@ class User(Base):
     organizations_owned = relationship("Organization", back_populates="owner")
     organizations_member = relationship("Organization", secondary=organization_members, back_populates="members")
     campaign_signatures = relationship("CampaignSignature", back_populates="user")
+    badges = relationship("UserBadge", back_populates="user")
+    milestones = relationship("Milestone", back_populates="user")
+    success_stories = relationship("SuccessStory", back_populates="user")
+    photos = relationship("PledgePhoto", back_populates="user")
+    activities = relationship("ActivityFeed", back_populates="user")
 
 class Organization(Base):
     __tablename__ = "organizations"
@@ -68,6 +91,8 @@ class Organization(Base):
     pledges = relationship("Pledge", back_populates="organization")
     campaigns = relationship("Campaign", back_populates="organization")
     custom_actions = relationship("EnvironmentalAction", back_populates="organization")
+    milestones = relationship("Milestone", back_populates="organization")
+    activities = relationship("ActivityFeed", back_populates="organization")
 
 class EnvironmentalAction(Base):
     __tablename__ = "environmental_actions"
@@ -133,6 +158,8 @@ class Pledge(Base):
     action = relationship("EnvironmentalAction", back_populates="pledges")
     organization = relationship("Organization", back_populates="pledges")
     follow_ups = relationship("FollowUp", back_populates="pledge")
+    success_stories = relationship("SuccessStory", back_populates="pledge")
+    photos = relationship("PledgePhoto", back_populates="pledge")
 
 class FollowUp(Base):
     __tablename__ = "follow_ups"
@@ -189,3 +216,122 @@ class CampaignSignature(Base):
     # Relationships
     campaign = relationship("Campaign", back_populates="signatures")
     user = relationship("User", back_populates="campaign_signatures")
+
+class Badge(Base):
+    __tablename__ = "badges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    description = Column(Text, nullable=False)
+    category = Column(SQLEnum(BadgeCategory), nullable=False)
+    tier = Column(SQLEnum(BadgeTier), nullable=False)
+    icon = Column(String, nullable=False)  # Icon name or emoji
+    color = Column(String, default="#4CAF50")  # Hex color code
+
+    # Criteria for earning
+    criteria_type = Column(String, nullable=False)  # e.g., "carbon_saved", "pledges_completed", "streak_days"
+    criteria_value = Column(Float, nullable=False)  # Threshold to achieve
+
+    # Order and display
+    sort_order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    can_order_physical = Column(Boolean, default=False)  # Can user order physical version?
+    physical_cost = Column(Float, default=0.0)  # Cost if orderable
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user_badges = relationship("UserBadge", back_populates="badge")
+
+class UserBadge(Base):
+    __tablename__ = "user_badges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    badge_id = Column(Integer, ForeignKey("badges.id"))
+
+    earned_at = Column(DateTime, default=datetime.utcnow)
+    progress = Column(Float, default=0.0)  # Progress towards next tier
+    is_displayed = Column(Boolean, default=True)  # Show on profile?
+    physical_ordered = Column(Boolean, default=False)
+    physical_ordered_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    user = relationship("User", back_populates="badges")
+    badge = relationship("Badge", back_populates="user_badges")
+
+class Milestone(Base):
+    __tablename__ = "milestones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    organization_id = Column(Integer, ForeignKey("organizations.id"), nullable=True)
+
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=False)
+    milestone_type = Column(String, nullable=False)  # e.g., "carbon_100kg", "pledge_streak_30"
+    value_achieved = Column(Float, nullable=False)
+
+    celebrated_at = Column(DateTime, default=datetime.utcnow)
+    is_public = Column(Boolean, default=True)
+
+    # Relationships
+    user = relationship("User", back_populates="milestones")
+    organization = relationship("Organization", back_populates="milestones")
+
+class SuccessStory(Base):
+    __tablename__ = "success_stories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    pledge_id = Column(Integer, ForeignKey("pledges.id"), nullable=True)
+
+    title = Column(String, nullable=False)
+    story = Column(Text, nullable=False)
+    image_url = Column(String, nullable=True)
+    impact_highlight = Column(String, nullable=True)  # e.g., "Saved 500kg CO2"
+
+    is_featured = Column(Boolean, default=False)
+    is_approved = Column(Boolean, default=False)  # Moderation
+    submitted_at = Column(DateTime, default=datetime.utcnow)
+    approved_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    user = relationship("User", back_populates="success_stories")
+    pledge = relationship("Pledge", back_populates="success_stories")
+
+class PledgePhoto(Base):
+    __tablename__ = "pledge_photos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    pledge_id = Column(Integer, ForeignKey("pledges.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    photo_url = Column(String, nullable=False)
+    caption = Column(Text, nullable=True)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+
+    # Peer verification
+    verified_by_peers = Column(Integer, default=0)
+
+    # Relationships
+    pledge = relationship("Pledge", back_populates="photos")
+    user = relationship("User", back_populates="photos")
+
+class ActivityFeed(Base):
+    __tablename__ = "activity_feed"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    organization_id = Column(Integer, ForeignKey("organizations.id"), nullable=True)
+
+    activity_type = Column(String, nullable=False)  # "pledge_created", "badge_earned", "milestone_reached"
+    activity_text = Column(String, nullable=False)  # Display text
+    related_id = Column(Integer, nullable=True)  # ID of related entity (pledge_id, badge_id, etc.)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    is_public = Column(Boolean, default=True)
+
+    # Relationships
+    user = relationship("User", back_populates="activities")
+    organization = relationship("Organization", back_populates="activities")
