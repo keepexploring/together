@@ -45,6 +45,12 @@
                 </q-item-section>
                 <q-item-section>Campaigns</q-item-section>
               </q-item>
+              <q-item clickable v-close-popup to="/leaderboards">
+                <q-item-section avatar>
+                  <q-icon name="leaderboard" />
+                </q-item-section>
+                <q-item-section>Leaderboards</q-item-section>
+              </q-item>
               <q-separator />
               <q-item clickable v-close-popup to="/organize">
                 <q-item-section avatar>

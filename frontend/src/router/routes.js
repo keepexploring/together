@@ -15,7 +15,9 @@ const routes = [
       { path: 'profile/:userId?', name: 'profile', component: () => import('pages/ProfilePage.vue') },
       { path: 'dashboard', name: 'dashboard', component: () => import('pages/DashboardPage.vue') },
       { path: 'community', name: 'community', component: () => import('pages/CommunityFeedPage.vue') },
-      { path: 'stories', name: 'stories', component: () => import('pages/StoriesPage.vue') }
+      { path: 'stories', name: 'stories', component: () => import('pages/StoriesPage.vue') },
+      { path: 'leaderboards', name: 'leaderboards', component: () => import('pages/LeaderboardsPage.vue') },
+      { path: 'analytics/:orgId', name: 'analytics', component: () => import('pages/AnalyticsPage.vue') }
     ]
   },
 
